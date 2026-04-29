@@ -1,0 +1,9 @@
+node_modules/
+.cursor/
+.DS_Store
+**/.DS_Store
+.~*
+.tmp_py/
+.pip_pkgs/
+.venv_xls/
+*.log

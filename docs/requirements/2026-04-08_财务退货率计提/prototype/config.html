@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>配置中心 · 全渠道退款率测算原型</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <a href="index.html"><h1>全渠道退款率测算</h1></a>
+        <span>原型 · config.html</span>
+      </div>
+      <ul class="nav">
+        <li><a href="overview.html">退款率概览</a></li>
+        <li><a href="msku.html">MSKU 分析</a></li>
+        <li><a href="batch.html">跑批中心</a></li>
+        <li><a href="exception.html">异常与对账</a></li>
+        <li><a href="config.html" class="active">配置中心</a></li>
+      </ul>
+      <div class="sidebar-foot">规则版本 v0.9-demo · 数据为示意</div>
+    </aside>
+
+    <main>
+      <div class="page-head">
+        <div>
+          <h2>配置中心</h2>
+          <p>店铺纳入范围、MSKU 分摊规则、公式/规则版本、亚马逊字段映射（示意）。仅系统管理员可编辑。</p>
+        </div>
+        <span class="tag">运维 · P2</span>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <h3>店铺与跑批范围</h3>
+          <table class="data">
+            <thead>
+              <tr>
+                <th>店铺</th>
+                <th>渠道</th>
+                <th>纳入月批</th>
+                <th>备注</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>AMZ-US-店铺A</td>
+                <td>亚马逊</td>
+                <td><input type="checkbox" checked /></td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td>AMZ-EU-店铺B</td>
+                <td>亚马逊</td>
+                <td><input type="checkbox" checked /></td>
+                <td>需维护 EUR 汇率</td>
+              </tr>
+              <tr>
+                <td>Shopify-店铺C</td>
+                <td>Shopify</td>
+                <td><input type="checkbox" checked /></td>
+                <td>—</td>
+              </tr>
+            </tbody>
+          </table>
+          <button type="button" class="btn btn-primary" style="margin-top:12px;">保存</button>
+        </div>
+        <div class="card">
+          <h3>规则版本与分摊</h3>
+          <div class="field" style="margin-bottom:12px;">
+            <label>当前计提版退款率规则</label>
+            <select>
+              <option>R-2026-04-01（生效）</option>
+              <option>R-2026-03-01</option>
+            </select>
+          </div>
+          <div class="field" style="margin-bottom:12px;">
+            <label>订单级退款 → MSKU 默认分摊</label>
+            <select>
+              <option>按发货行金额占比</option>
+              <option>按发货行数量均摊</option>
+              <option>主 MSKU 100%</option>
+            </select>
+          </div>
+          <div class="field" style="margin-bottom:12px;">
+            <label>边界订单（创建月 vs 发货≥2025-01）</label>
+            <select>
+              <option>[TODO] 待财务签字</option>
+              <option>纳入并打标</option>
+              <option>排除</option>
+            </select>
+          </div>
+          <button type="button" class="btn btn-primary">保存</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>月度汇率维护（示意）</h3>
+        <table class="data">
+          <thead>
+            <tr>
+              <th>年月</th>
+              <th>币种</th>
+              <th class="num">→ USD</th>
+              <th class="num">→ CNY</th>
+              <th>来源</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>2026-02</td>
+              <td>EUR</td>
+              <td class="num"><input type="text" value="1.045" style="width:88px;text-align:right;" /></td>
+              <td class="num"><input type="text" value="7.62" style="width:88px;text-align:right;" /></td>
+              <td>财务主数据</td>
+            </tr>
+            <tr>
+              <td>2026-02</td>
+              <td>USD</td>
+              <td class="num">1.0000</td>
+              <td class="num">7.29</td>
+              <td>财务主数据</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

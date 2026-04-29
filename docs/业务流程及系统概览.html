@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>业务流程及系统概览</title>
+  <style>
+    :root {
+      --bg: #f4f6fa;
+      --text: #1a1d26;
+      --pill-bg: #2f2654;
+      --pill-text: #fff;
+      --step-radius: 14px;
+      --step-h: 80px;
+      --step-pad-x: 16px;
+      --step-pad-y: 10px;
+      --step-font: 13px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 32px 24px 48px;
+      font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      min-width: 1200px;
+    }
+
+    h1 {
+      margin: 0 0 28px;
+      font-size: 22px;
+      font-weight: 700;
+      text-align: center;
+      letter-spacing: 0.02em;
+    }
+
+    .flow-row {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin: 0 auto;
+      max-width: 1920px;
+    }
+
+    .flow-item {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      flex-shrink: 0;
+      color: #333;
+      font-size: 18px;
+      user-select: none;
+    }
+
+    .arrow-down {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      max-width: 1920px;
+      margin: 8px auto 8px;
+      padding-right: 48px;
+      min-height: 36px;
+      font-size: 28px;
+      color: #333;
+    }
+
+    .node-pill {
+      padding: 12px 28px;
+      border-radius: 999px;
+      background: var(--pill-bg);
+      color: var(--pill-text);
+      font-size: 15px;
+      font-weight: 600;
+      white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(47, 38, 84, 0.25);
+    }
+
+    /* 步骤：统一高度与圆角，宽度随文案（过长则在 max-width 内换行） */
+    .step {
+      height: var(--step-h);
+      width: max-content;
+      max-width: 176px;
+      padding: var(--step-pad-y) var(--step-pad-x);
+      border-radius: var(--step-radius);
+      font-size: var(--step-font);
+      font-weight: 600;
+      line-height: 1.35;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dual-steps {
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dual-steps .step {
+      max-width: 120px;
+      min-width: 0;
+    }
+
+    .c-oms-a   { background: #5b7cfa; color: #fff; }
+    .c-wms-a   { background: #2dd4bf; color: #0f172a; }
+    .c-log-oms { background: #f59e0b; color: #1c1917; }
+    .c-wh-a    { background: #fb7185; color: #fff; }
+    .c-wh-b    { background: #f97316; color: #fff; }
+    .c-tms-a   { background: #38bdf8; color: #0c4a6e; }
+    .c-customs-a { background: #a78bfa; color: #1e1b4b; }
+    .c-tms-b   { background: #22d3ee; color: #083344; }
+    .c-customs-b { background: #c084fc; color: #3b0764; }
+    .c-owms-a  { background: #4ade80; color: #14532d; }
+    .c-platform { background: #facc15; color: #422006; }
+    .c-oms-b   { background: #6366f1; color: #fff; }
+    .c-owms-b  { background: #34d399; color: #064e3b; }
+    .c-owms-c  { background: #10b981; color: #fff; }
+    .c-lastmile { background: #ef4444; color: #fff; }
+    .c-finance { background: #0ea5e9; color: #fff; }
+  </style>
+</head>
+<body>
+  <h1>业务流程及系统概览</h1>
+
+  <div class="flow-row" aria-label="第一行流程">
+    <div class="flow-item">
+      <div class="node-pill">开始</div>
+    </div>
+    <span class="arrow" aria-hidden="true">→</span>
+
+    <div class="flow-item">
+      <div class="step c-oms-a">发起补货到海外仓</div>
+    </div>
+    <span class="arrow">→</span>
+
+    <div class="flow-item">
+      <div class="step c-wms-a">商品拣选与包装</div>
+    </div>
+    <span class="arrow">→</span>
+
+    <div class="flow-item">
+      <div class="step c-log-oms">国内揽收</div>
+    </div>
+    <span class="arrow">→</span>
+
+    <div class="flow-item">
+      <div class="dual-steps">
+        <div class="step c-wh-a">揽收仓库</div>
+        <div class="step c-wh-b">分拨中心</div>
+      </div>
+    </div>
+    <span class="arrow">→</span>
+
+    <div class="flow-item">
+      <div class="step c-tms-a">国内运输</div>
+    </div>
+    <span class="arrow">→</span>
+
+    <div class="flow-item">
+      <div class="step c-customs-a">出口报关</div>
+    </div>
+    <span class="arrow">→</span>
+
+    <div class="flow-item">
+      <div class="step c-tms-b">国际头程运输及干线</div>
+    </div>
+  </div>
+
+  <div class="arrow-down" aria-hidden="true">↓</div>
+
+  <div class="flow-row" aria-label="第二行流程">
+    <div class="flow-item">
+      <div class="step c-customs-b">目的地清关</div>
+    </div>
+    <span class="arrow">→</span>
+
+    <div class="flow-item">
+      <div class="step c-owms-a">海外仓入库</div>
+    </div>
+    <span class="arrow">→</span>
+
+    <div class="flow-item">
+      <div class="step c-platform">顾客在跨境电商平台下单</div>
+    </div>
+    <span class="arrow">→</span>
+
+    <div class="flow-item">
+      <div class="step c-oms-b">接单</div>
+    </div>
+    <span class="arrow">→</span>
+
+    <div class="flow-item">
+      <div class="step c-owms-b">拆单/合单</div>
+    </div>
+    <span class="arrow">→</span>
+
+    <div class="flow-item">
+      <div class="step c-owms-c">海外仓出库</div>
+    </div>
+    <span class="arrow">→</span>
+
+    <div class="flow-item">
+      <div class="step c-lastmile">尾程配送及送达</div>
+    </div>
+    <span class="arrow">→</span>
+
+    <div class="flow-item">
+      <div class="step c-finance">结算与财务管理</div>
+    </div>
+    <span class="arrow">→</span>
+
+    <div class="flow-item">
+      <div class="node-pill">结束</div>
+    </div>
+  </div>
+</body>
+</html>

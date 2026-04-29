@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>跑批中心 · 全渠道退款率测算原型</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <a href="index.html"><h1>全渠道退款率测算</h1></a>
+        <span>原型 · batch.html</span>
+      </div>
+      <ul class="nav">
+        <li><a href="overview.html">退款率概览</a></li>
+        <li><a href="msku.html">MSKU 分析</a></li>
+        <li><a href="batch.html" class="active">跑批中心</a></li>
+        <li><a href="exception.html">异常与对账</a></li>
+        <li><a href="config.html">配置中心</a></li>
+      </ul>
+      <div class="sidebar-foot">规则版本 v0.9-demo · 数据为示意</div>
+    </aside>
+
+    <main>
+      <div class="page-head">
+        <div>
+          <h2>跑批中心</h2>
+          <p>月批、按订单创建月历史补算、区间重跑；任务状态：排队 / 执行中 / 成功 / 部分成功 / 失败。仅管理员可触发重跑。</p>
+        </div>
+        <span class="tag">FR-B-01～04 · P0</span>
+      </div>
+
+      <div class="toolbar">
+        <button type="button" class="btn btn-primary">新建月批任务</button>
+        <button type="button" class="btn">新建历史补算（按创建月）</button>
+        <button type="button" class="btn">按区间重算</button>
+      </div>
+
+      <div class="card">
+        <h3>任务列表</h3>
+        <table class="data">
+          <thead>
+            <tr>
+              <th>任务 ID</th>
+              <th>类型</th>
+              <th>范围</th>
+              <th>状态</th>
+              <th>开始时间</th>
+              <th>耗时</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="num">JOB-20260408-001</td>
+              <td>月批</td>
+              <td>全部店铺 · 2026-03</td>
+              <td><span class="pill pill-ok">成功</span></td>
+              <td>2026-04-08 02:15</td>
+              <td>42 min</td>
+              <td><a class="link" href="#">日志</a> · <a class="link" href="#">重跑</a></td>
+            </tr>
+            <tr>
+              <td class="num">JOB-20260407-018</td>
+              <td>历史补算</td>
+              <td>创建月 2025-06 · 发货≥2025-01</td>
+              <td><span class="pill pill-warn">部分成功</span></td>
+              <td>2026-04-07 21:03</td>
+              <td>3h 12m</td>
+              <td><a class="link" href="#">日志</a> · <a class="link" href="#">重试失败分片</a></td>
+            </tr>
+            <tr>
+              <td class="num">JOB-20260406-003</td>
+              <td>区间重算</td>
+              <td>AMZ-US-店铺A · 2026-01～02</td>
+              <td><span class="pill pill-bad">失败</span></td>
+              <td>2026-04-06 10:22</td>
+              <td>—</td>
+              <td><a class="link" href="#">错误详情</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <h3>新建任务 · 表单示意</h3>
+          <div class="field" style="margin-bottom:12px;">
+            <label>任务类型</label>
+            <select><option>月批</option><option>历史补算（创建月）</option><option>区间重算</option></select>
+          </div>
+          <div class="field" style="margin-bottom:12px;">
+            <label>目标月份 / 创建月</label>
+            <input type="month" value="2026-03" />
+          </div>
+          <div class="field" style="margin-bottom:12px;">
+            <label>店铺范围</label>
+            <select><option>全部</option><option>指定店铺…</option></select>
+          </div>
+          <button type="button" class="btn btn-primary">提交任务</button>
+        </div>
+        <div class="card">
+          <h3>跑批结果摘要（示意）</h3>
+          <p style="margin:0 0 12px;color:var(--muted);font-size:13px;">成功 36 店 · 失败 2 店 · 规则版本 R-2026-04-01</p>
+          <table class="data">
+            <tbody>
+              <tr><th style="width:40%;">解析 Amazon</th><td>完成</td></tr>
+              <tr><th>同步金蝶</th><td>2 单缺价税</td></tr>
+              <tr><th>收单退款</th><td>完成</td></tr>
+              <tr><th>汇率</th><td>EUR 2026-02 缺失</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

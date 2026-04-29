@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>退款率概览 · 全渠道退款率测算原型</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <a href="index.html"><h1>全渠道退款率测算</h1></a>
+        <span>原型 · overview.html</span>
+      </div>
+      <ul class="nav">
+        <li><a href="overview.html" class="active">退款率概览</a></li>
+        <li><a href="msku.html">MSKU 分析</a></li>
+        <li><a href="batch.html">跑批中心</a></li>
+        <li><a href="exception.html">异常与对账</a></li>
+        <li><a href="config.html">配置中心</a></li>
+      </ul>
+      <div class="sidebar-foot">规则版本 v0.9-demo · 数据为示意</div>
+    </aside>
+
+    <main>
+      <div class="page-head">
+        <div>
+          <h2>退款率概览</h2>
+          <p>按店铺、订单月查看趋势；支持原币 / USD / CNY 与渠道筛选。亚马逊：报告口径（不含平台税）；非亚马逊：金蝶确认收入 + 收单退款。</p>
+        </div>
+        <span class="tag">FR-R-01 · P0</span>
+      </div>
+
+      <div class="kpi-row">
+        <div class="kpi">
+          <div class="label">所选范围 · 订单月退款率（计提口径）</div>
+          <div class="value">3.82%</div>
+          <div class="sub">规则版本 R-2026-04-01</div>
+        </div>
+        <div class="kpi">
+          <div class="label">退款额（USD · 退货发生月换汇）</div>
+          <div class="value">$128,440</div>
+          <div class="sub">环比 +4.2%</div>
+        </div>
+        <div class="kpi">
+          <div class="label">收入分母（USD · 确认收入月换汇）</div>
+          <div class="value">$3.36M</div>
+          <div class="sub">含选中店铺汇总</div>
+        </div>
+        <div class="kpi">
+          <div class="label">数据完整度</div>
+          <div class="value" style="color: var(--warn);">部分成功</div>
+          <div class="sub">2 个店铺待核对</div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="field">
+          <label>店铺（多选示意）</label>
+          <select multiple size="1" style="min-width:220px;height:36px;">
+            <option selected>全部店铺（38/40）</option>
+            <option>AMZ-US-店铺A</option>
+            <option>AMZ-EU-店铺B</option>
+            <option>Shopify-店铺C</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>渠道</label>
+          <select>
+            <option>全部渠道</option>
+            <option>亚马逊</option>
+            <option>Shopify</option>
+            <option>App 商城</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>订单月起止</label>
+          <input type="month" value="2025-01" /> <span style="color:var(--muted);">—</span> <input type="month" value="2026-03" />
+        </div>
+        <div class="field">
+          <label>展示币种</label>
+          <select>
+            <option>原币（按店铺）</option>
+            <option selected>USD</option>
+            <option>CNY</option>
+          </select>
+        </div>
+        <button type="button" class="btn btn-primary">查询</button>
+        <button type="button" class="btn">导出汇总</button>
+        <button type="button" class="btn">导出明细</button>
+      </div>
+
+      <div class="hint">
+        <strong>税口径提示（FR-R-04）：</strong> 亚马逊退款金额不含平台税项；Shopify/App 等非亚马逊渠道不含税由金蝶含税价与税额推算，汇总时请留意渠道标签，避免跨口径直接相加误解。
+      </div>
+
+      <div class="card">
+        <h3>订单月趋势 · 退款率 %</h3>
+        <div class="chart-bars" aria-hidden="true">
+          <div class="chart-bar-wrap"><div class="chart-bar" style="height:45%;"></div><span class="chart-label">25-01</span></div>
+          <div class="chart-bar-wrap"><div class="chart-bar" style="height:52%;"></div><span class="chart-label">25-03</span></div>
+          <div class="chart-bar-wrap"><div class="chart-bar" style="height:38%;"></div><span class="chart-label">25-05</span></div>
+          <div class="chart-bar-wrap"><div class="chart-bar" style="height:61%;"></div><span class="chart-label">25-07</span></div>
+          <div class="chart-bar-wrap"><div class="chart-bar" style="height:49%;"></div><span class="chart-label">25-09</span></div>
+          <div class="chart-bar-wrap"><div class="chart-bar" style="height:55%;"></div><span class="chart-label">25-11</span></div>
+          <div class="chart-bar-wrap"><div class="chart-bar" style="height:42%;"></div><span class="chart-label">26-01</span></div>
+          <div class="chart-bar-wrap"><div class="chart-bar" style="height:48%;"></div><span class="chart-label">26-03</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>店铺 × 订单月汇总</h3>
+        <table class="data">
+          <thead>
+            <tr>
+              <th>店铺</th>
+              <th>渠道</th>
+              <th>订单月</th>
+              <th class="num">退款率</th>
+              <th class="num">退款 USD</th>
+              <th class="num">收入分母 USD</th>
+              <th>数据状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>AMZ-US-店铺A</td>
+              <td><span class="pill pill-muted">亚马逊</span></td>
+              <td>2026-02</td>
+              <td class="num">3.21%</td>
+              <td class="num">42,100</td>
+              <td class="num">1,311,200</td>
+              <td><span class="pill pill-ok">完整</span></td>
+              <td><a class="link" href="msku.html">MSKU 下钻</a></td>
+            </tr>
+            <tr>
+              <td>Shopify-店铺C</td>
+              <td><span class="pill pill-muted">Shopify</span></td>
+              <td>2026-02</td>
+              <td class="num">5.04%</td>
+              <td class="num">18,330</td>
+              <td class="num">363,800</td>
+              <td><span class="pill pill-warn">部分</span></td>
+              <td><a class="link" href="msku.html">MSKU 下钻</a></td>
+            </tr>
+            <tr>
+              <td>AMZ-EU-店铺B</td>
+              <td><span class="pill pill-muted">亚马逊</span></td>
+              <td>2026-02</td>
+              <td class="num">—</td>
+              <td class="num">—</td>
+              <td class="num">—</td>
+              <td><span class="pill pill-bad">汇率缺失</span></td>
+              <td><a class="link" href="exception.html">查看异常</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

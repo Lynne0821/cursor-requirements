@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MSKU 分析 · 全渠道退款率测算原型</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <a href="index.html"><h1>全渠道退款率测算</h1></a>
+        <span>原型 · msku.html</span>
+      </div>
+      <ul class="nav">
+        <li><a href="overview.html">退款率概览</a></li>
+        <li><a href="msku.html" class="active">MSKU 分析</a></li>
+        <li><a href="batch.html">跑批中心</a></li>
+        <li><a href="exception.html">异常与对账</a></li>
+        <li><a href="config.html">配置中心</a></li>
+      </ul>
+      <div class="sidebar-foot">规则版本 v0.9-demo · 数据为示意</div>
+    </aside>
+
+    <main>
+      <div class="page-head">
+        <div>
+          <h2>MSKU 分析</h2>
+          <p>在概览相同筛选条件下，下钻至 MSKU 粒度；无行级退款时按配置分摊（P1，需财务确认规则）。</p>
+        </div>
+        <span class="tag">FR-R-02 · P1</span>
+      </div>
+
+      <div class="toolbar">
+        <div class="field">
+          <label>店铺</label>
+          <select><option selected>AMZ-US-店铺A</option></select>
+        </div>
+        <div class="field">
+          <label>订单月</label>
+          <input type="month" value="2026-02" />
+        </div>
+        <button type="button" class="btn btn-primary">查询</button>
+        <button type="button" class="btn">导出 MSKU 明细</button>
+        <a class="link" href="overview.html" style="align-self:center;padding-left:8px;">← 返回概览</a>
+      </div>
+
+      <div class="card">
+        <h3>MSKU 级指标</h3>
+        <table class="data">
+          <thead>
+            <tr>
+              <th>MSKU</th>
+              <th>订单月</th>
+              <th class="num">退款率</th>
+              <th class="num">退款原币</th>
+              <th class="num">退款 USD</th>
+              <th class="num">退款 CNY</th>
+              <th>分摊标记</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>SKU-RED-L</td>
+              <td>2026-02</td>
+              <td class="num">2.10%</td>
+              <td class="num">USD 2,400</td>
+              <td class="num">2,400</td>
+              <td class="num">17,520</td>
+              <td><span class="pill pill-ok">行级</span></td>
+            </tr>
+            <tr>
+              <td>SKU-BLU-M</td>
+              <td>2026-02</td>
+              <td class="num">4.55%</td>
+              <td class="num">USD 5,200</td>
+              <td class="num">5,200</td>
+              <td class="num">37,960</td>
+              <td><span class="pill pill-warn">订单分摊</span></td>
+            </tr>
+            <tr>
+              <td>SKU-GRN-S</td>
+              <td>2026-02</td>
+              <td class="num">1.02%</td>
+              <td class="num">USD 890</td>
+              <td class="num">890</td>
+              <td class="num">6,497</td>
+              <td><span class="pill pill-ok">行级</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>异常与对账 · 全渠道退款率测算原型</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <a href="index.html"><h1>全渠道退款率测算</h1></a>
+        <span>原型 · exception.html</span>
+      </div>
+      <ul class="nav">
+        <li><a href="overview.html">退款率概览</a></li>
+        <li><a href="msku.html">MSKU 分析</a></li>
+        <li><a href="batch.html">跑批中心</a></li>
+        <li><a href="exception.html" class="active">异常与对账</a></li>
+        <li><a href="config.html">配置中心</a></li>
+      </ul>
+      <div class="sidebar-foot">规则版本 v0.9-demo · 数据为示意</div>
+    </aside>
+
+    <main>
+      <div class="page-head">
+        <div>
+          <h2>异常与对账</h2>
+          <p>未匹配退款、金蝶缺失、汇率缺失、收单与金蝶不一致等；支持导出核对，禁止静默当作完整汇总。</p>
+        </div>
+        <span class="tag">§10.3 异常处理</span>
+      </div>
+
+      <div class="toolbar">
+        <div class="field">
+          <label>异常类型</label>
+          <select>
+            <option>全部</option>
+            <option>Amazon refund 无 Order 匹配</option>
+            <option>金蝶缺确认收入/价税</option>
+            <option>汇率缺失</option>
+            <option>收单与金蝶不一致</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>店铺</label>
+          <select><option>全部</option><option>AMZ-EU-店铺B</option></select>
+        </div>
+        <button type="button" class="btn btn-primary">筛选</button>
+        <button type="button" class="btn">导出异常清单</button>
+      </div>
+
+      <div class="card">
+        <h3>异常明细</h3>
+        <table class="data">
+          <thead>
+            <tr>
+              <th>类型</th>
+              <th>店铺</th>
+              <th>订单参考号</th>
+              <th>发生时间</th>
+              <th>说明</th>
+              <th>数据来源</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="pill pill-bad">汇率缺失</span></td>
+              <td>AMZ-EU-店铺B</td>
+              <td>—</td>
+              <td>2026-02</td>
+              <td>EUR→USD 月度汇率未维护</td>
+              <td>配置</td>
+            </tr>
+            <tr>
+              <td><span class="pill pill-warn">匹配失败</span></td>
+              <td>AMZ-US-店铺A</td>
+              <td>111-1234567-8901234</td>
+              <td>2026-02-14</td>
+              <td>Transaction refund 无对应 Order 行</td>
+              <td>报告</td>
+            </tr>
+            <tr>
+              <td><span class="pill pill-warn">金蝶缺失</span></td>
+              <td>Shopify-店铺C</td>
+              <td>INT-998877</td>
+              <td>2026-02-10</td>
+              <td>缺确认收入日期</td>
+              <td>金蝶</td>
+            </tr>
+            <tr>
+              <td><span class="pill pill-muted">对账差异</span></td>
+              <td>App-店铺D</td>
+              <td>APP-5566</td>
+              <td>2026-02-08</td>
+              <td>收单退款金额与金蝶冲减差异 &gt; 阈值</td>
+              <td>收单 / 金蝶</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
