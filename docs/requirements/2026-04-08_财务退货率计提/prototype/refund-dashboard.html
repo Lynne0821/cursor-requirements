@@ -105,9 +105,9 @@
       <h3 style="margin-top:0;">筛选条件</h3>
       <div class="filters">
         <div class="field">
-          <label>平台</label>
+          <label>渠道</label>
           <select id="f-platform">
-            <option value="">全部平台</option>
+            <option value="">全部渠道</option>
           </select>
         </div>
         <div class="field">
@@ -123,6 +123,10 @@
         <div class="field">
           <label>订单月止</label>
           <input type="month" id="f-month-end" value="2026-03" />
+        </div>
+        <div class="field">
+          <label>SKU</label>
+          <input type="text" id="f-sku" placeholder="输入SKU" />
         </div>
         <button type="button" class="btn btn-primary" id="btn-apply">应用筛选</button>
         <button type="button" class="btn" id="btn-reset">重置</button>
@@ -194,10 +198,12 @@
     var store = document.getElementById("f-store").value;
     var ms = document.getElementById("f-month-start").value;
     var me = document.getElementById("f-month-end").value;
+    var sku = document.getElementById("f-sku").value.trim().toLowerCase();
     state.filtered = RAW.filter(function (r) {
       if (plat && r.platform !== plat) return false;
       if (store && r.store !== store) return false;
       if (!monthInRange(r.orderMonth, ms, me)) return false;
+      if (sku && String(r.msku || "").toLowerCase().indexOf(sku) < 0) return false;
       return true;
     });
   }
@@ -401,6 +407,7 @@
     document.getElementById("f-store").value = "";
     document.getElementById("f-month-start").value = "2025-01";
     document.getElementById("f-month-end").value = "2026-03";
+    document.getElementById("f-sku").value = "";
     applyFilters();
     renderTable();
   });
