@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>综合退款率 · 多维度查询与导出</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .wrap { max-width: 1680px; margin: 0 auto; padding: 24px 28px 48px; }
+    .topbar { margin-bottom: 20px; }
+    .topbar h1 { margin: 0 0 8px; font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+    .topbar .sub { margin: 0; font-size: 13px; color: var(--muted); line-height: 1.55; max-width: 920px; }
+    .formula-bar {
+      background: var(--accent-soft);
+      border: 1px solid #cfe8df;
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: #134e45;
+    }
+    .formula-bar strong { font-weight: 600; }
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: flex-end;
+      margin-bottom: 16px;
+    }
+    .dim-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .dim-label { font-size: 12px; color: var(--muted); font-weight: 600; margin-right: 4px; }
+    .dim-btn {
+      font-family: inherit;
+      font-size: 13px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .dim-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .dim-btn.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      font-weight: 500;
+    }
+    .kpi-inline {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-left: auto;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .kpi-inline .v { font-weight: 700; color: var(--text); font-size: 18px; }
+    .table-wrap { overflow: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); }
+    table.grid { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 960px; }
+    table.grid th, table.grid td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+    table.grid th {
+      background: #fafaf9;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+    }
+    table.grid tbody tr:hover td { background: #fafaf9; }
+    table.grid .num { text-align: right; font-variant-numeric: tabular-nums; }
+    .foot-note { margin-top: 12px; font-size: 12px; color: var(--muted); line-height: 1.5; }
+    .badge { font-size: 11px; padding: 2px 8px; border-radius: 999px; background: #f5f5f4; color: #44403c; }
+    @media (max-width: 900px) {
+      .kpi-inline { width: 100%; margin-left: 0; margin-top: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="topbar">
+      <h1>综合退款率 · 多维度查询与导出</h1>
+      <p class="sub">
+        财务侧以<strong>表单导出</strong>为主，本页提供筛选与维度切换；明细视图对齐「订单 + MSKU」底表。
+        聚合视图按当前筛选范围内的明细行汇总：<strong>退款率 = Σ退货总金额 ÷ Σ总金额</strong>（与筛选条件一致）。
+      </p>
+    </header>
+
+    <div class="formula-bar">
+      <strong>口径说明：</strong>
+      时间范围按<strong>订单月</strong>过滤（与底表「订单月」一致）；分子为各行<strong>退货总金额</strong>之和，分母为各行<strong>总金额</strong>之和。
+      明细行可按 MSKU 展示；聚合时自动按所选维度汇总。导出为当前表格内容（CSV，Excel 可直接打开）。
+    </div>
+
+    <div class="card" style="margin-bottom: 16px;">
+      <h3 style="margin-top:0;">筛选条件</h3>
+      <div class="filters">
+        <div class="field">
+          <label>平台</label>
+          <select id="f-platform">
+            <option value="">全部平台</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>店铺</label>
+          <select id="f-store">
+            <option value="">全部店铺</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>订单月起</label>
+          <input type="month" id="f-month-start" value="2025-01" />
+        </div>
+        <div class="field">
+          <label>订单月止</label>
+          <input type="month" id="f-month-end" value="2026-03" />
+        </div>
+        <button type="button" class="btn btn-primary" id="btn-apply">应用筛选</button>
+        <button type="button" class="btn" id="btn-reset">重置</button>
+        <button type="button" class="btn" id="btn-export">导出当前表格 CSV</button>
+      </div>
+    </div>
+
+    <div class="dim-row">
+      <span class="dim-label">分析维度</span>
+      <button type="button" class="dim-btn active" data-dim="year">按年</button>
+      <button type="button" class="dim-btn" data-dim="month">按月</button>
+      <button type="button" class="dim-btn" data-dim="channel">按渠道</button>
+      <button type="button" class="dim-btn" data-dim="store">按店铺</button>
+      <button type="button" class="dim-btn" data-dim="detail">订单 + MSKU 明细</button>
+      <div class="kpi-inline" id="kpi-summary">
+        <span>当前筛选 · 退款率</span>
+        <span class="v" id="kpi-rate">—</span>
+        <span>| 退货总金额</span>
+        <span class="v" id="kpi-refund">—</span>
+        <span>| 总金额</span>
+        <span class="v" id="kpi-total">—</span>
+        <span>| 行数 <span class="badge" id="kpi-rows">0</span></span>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="grid" id="main-table">
+        <thead id="thead"></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <p class="foot-note">
+      原型数据为脚本生成的示例，用于交互演示；上线后以实际底表为准。若财务要求按<strong>退款月</strong>统计，可增加「统计口径：订单月 / 退款月」切换并在 PRD 中冻结。
+    </p>
+  </div>
+
+  <script>
+(function () {
+  /** 示例明细数据（字段对齐底表；金额为演示） */
+  var RAW = [
+    { platform: "亚马逊", store: "Govee_US", orderDate: "2025-01-01", orderMonth: "2025-01", orderId: "111-1234567-8901234", msku: "B08XXXX001", currency: "USD", sales: 120.5, tax: 0, discount: -5, total: 115.5, refundDate: "2025-02-08", refundMonth: "2025-02", refundSales: -40, refundDiscount: 2, refundTotal: -38, refundDays: 38 },
+    { platform: "亚马逊", store: "Govee_US", orderDate: "2025-01-01", orderMonth: "2025-01", orderId: "111-1234567-8901234", msku: "B08XXXX002", currency: "USD", sales: 80, tax: 0, discount: -3, total: 77, refundDate: "2025-02-08", refundMonth: "2025-02", refundSales: -20, refundDiscount: 1, refundTotal: -19, refundDays: 38 },
+    { platform: "亚马逊", store: "Govee_DE", orderDate: "2025-03-15", orderMonth: "2025-03", orderId: "302-9988776-1122334", msku: "DE-SKU-01", currency: "EUR", sales: 90, tax: 0, discount: 0, total: 90, refundDate: "2025-04-01", refundMonth: "2025-04", refundSales: -90, refundDiscount: 0, refundTotal: -90, refundDays: 17 },
+    { platform: "独立站", store: "独立站-US", orderDate: "2025-06-10", orderMonth: "2025-06", orderId: "SO-202506001", msku: "WEB-A-01", currency: "USD", sales: 200, tax: 18, discount: -10, total: 208, refundDate: "2025-07-02", refundMonth: "2025-07", refundSales: -100, refundDiscount: 5, refundTotal: -95, refundDays: 22 },
+    { platform: "独立站", store: "独立站-US", orderDate: "2025-06-10", orderMonth: "2025-06", orderId: "SO-202506001", msku: "WEB-A-02", currency: "USD", sales: 150, tax: 12, discount: -8, total: 154, refundDate: "2025-07-02", refundMonth: "2025-07", refundSales: -50, refundDiscount: 2, refundTotal: -48, refundDays: 22 },
+    { platform: "APP商城", store: "APP-US", orderDate: "2025-09-01", orderMonth: "2025-09", orderId: "APP-778899", msku: "APP-SKU-99", currency: "USD", sales: 60, tax: 5, discount: 0, total: 65, refundDate: "2025-09-20", refundMonth: "2025-09", refundSales: -65, refundDiscount: 0, refundTotal: -65, refundDays: 19 },
+    { platform: "亚马逊", store: "Govee_US", orderDate: "2025-11-20", orderMonth: "2025-11", orderId: "111-9998888-1111222", msku: "B09YYYY111", currency: "USD", sales: 300, tax: 0, discount: -20, total: 280, refundDate: "2026-01-05", refundMonth: "2026-01", refundSales: -80, refundDiscount: 0, refundTotal: -80, refundDays: 46 },
+    { platform: "独立站", store: "独立站-EU", orderDate: "2026-02-01", orderMonth: "2026-02", orderId: "SO-202602010", msku: "EU-W-01", currency: "EUR", sales: 120, tax: 10, discount: -5, total: 125, refundDate: "2026-02-28", refundMonth: "2026-02", refundSales: -30, refundDiscount: 1, refundTotal: -29, refundDays: 27 }
+  ];
+
+  var state = {
+    dim: "year",
+    filtered: []
+  };
+
+  function parseMonth(m) {
+    var p = m.split("-");
+    return { y: parseInt(p[0], 10), m: parseInt(p[1], 10) };
+  }
+
+  function monthInRange(orderMonth, start, end) {
+    if (!orderMonth || !start || !end) return true;
+    if (orderMonth < start || orderMonth > end) return false;
+    return true;
+  }
+
+  function applyFilters() {
+    var plat = document.getElementById("f-platform").value;
+    var store = document.getElementById("f-store").value;
+    var ms = document.getElementById("f-month-start").value;
+    var me = document.getElementById("f-month-end").value;
+    state.filtered = RAW.filter(function (r) {
+      if (plat && r.platform !== plat) return false;
+      if (store && r.store !== store) return false;
+      if (!monthInRange(r.orderMonth, ms, me)) return false;
+      return true;
+    });
+  }
+
+  function fillSelect(id, values, extra) {
+    var sel = document.getElementById(id);
+    var keep = sel.querySelector("option[value='']");
+    sel.innerHTML = "";
+    if (keep) sel.appendChild(keep);
+    values.forEach(function (v) {
+      var o = document.createElement("option");
+      o.value = v;
+      o.textContent = v;
+      sel.appendChild(o);
+    });
+  }
+
+  function initFilters() {
+    var plats = [];
+    var stores = [];
+    RAW.forEach(function (r) {
+      if (plats.indexOf(r.platform) < 0) plats.push(r.platform);
+      if (stores.indexOf(r.store) < 0) stores.push(r.store);
+    });
+    fillSelect("f-platform", plats);
+    fillSelect("f-store", stores);
+  }
+
+  function sum(arr, key) {
+    return arr.reduce(function (s, r) { return s + (r[key] || 0); }, 0);
+  }
+
+  function fmtMoney(n) {
+    if (n === undefined || n === null || isNaN(n)) return "—";
+    return (Math.round(n * 100) / 100).toLocaleString("zh-CN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function fmtRate(refundAbs, totalPos) {
+    if (!totalPos || totalPos === 0) return "—";
+    var rate = refundAbs / totalPos * 100;
+    return rate.toFixed(2) + "%";
+  }
+
+  /** 退款率：退款金额取绝对值之和 / 总金额取正值之和（若业务约定退款为负值） */
+  function aggregateRows(rows) {
+    var refundSum = sum(rows, "refundTotal");
+    var refundAbs = rows.reduce(function (s, r) {
+      return s + Math.abs(r.refundTotal || 0);
+    }, 0);
+    var totalSum = sum(rows, "total");
+    var totalPos = rows.reduce(function (s, r) {
+      var t = r.total || 0;
+      return s + (t >= 0 ? t : 0);
+    }, 0);
+    if (totalPos === 0) totalPos = Math.abs(totalSum) || 1;
+    return { refundAbs: refundAbs, totalPos: totalPos, rows: rows.length, rawRefundSum: refundSum };
+  }
+
+  function updateKpi(rows) {
+    var a = aggregateRows(rows);
+    document.getElementById("kpi-rows").textContent = String(a.rows);
+    document.getElementById("kpi-refund").textContent = fmtMoney(a.refundAbs);
+    document.getElementById("kpi-total").textContent = fmtMoney(a.totalPos);
+    document.getElementById("kpi-rate").textContent = fmtRate(a.refundAbs, a.totalPos);
+  }
+
+  function renderTable() {
+    var rows = state.filtered;
+    updateKpi(rows);
+    var thead = document.getElementById("thead");
+    var tbody = document.getElementById("tbody");
+    thead.innerHTML = "";
+    tbody.innerHTML = "";
+
+    if (rows.length === 0) {
+      thead.innerHTML = "<tr><th>提示</th></tr>";
+      tbody.innerHTML = "<tr><td>无数据，请调整筛选条件。</td></tr>";
+      return;
+    }
+
+    var dim = state.dim;
+
+    if (dim === "detail") {
+      thead.innerHTML =
+        "<tr>" +
+        ["平台","店铺","订单日期","订单月","订单编号","MSKU","币别","销售额","税额","折扣","总金额","退款日期","退款月","退货销售额","退货折扣","退货总金额","退款天数"].map(function (h) { return "<th>" + h + "</th>"; }).join("") +
+        "<th class='num'>行退款率</th>" +
+        "</tr>";
+      rows.forEach(function (r) {
+        var tr = document.createElement("tr");
+        var lineRate = (r.total && r.total !== 0) ? (Math.abs(r.refundTotal) / Math.abs(r.total) * 100).toFixed(2) + "%" : "—";
+        tr.innerHTML =
+          "<td>" + r.platform + "</td>" +
+          "<td>" + r.store + "</td>" +
+          "<td>" + r.orderDate + "</td>" +
+          "<td>" + r.orderMonth + "</td>" +
+          "<td>" + r.orderId + "</td>" +
+          "<td>" + r.msku + "</td>" +
+          "<td>" + r.currency + "</td>" +
+          "<td class='num'>" + fmtMoney(r.sales) + "</td>" +
+          "<td class='num'>" + fmtMoney(r.tax) + "</td>" +
+          "<td class='num'>" + fmtMoney(r.discount) + "</td>" +
+          "<td class='num'>" + fmtMoney(r.total) + "</td>" +
+          "<td>" + r.refundDate + "</td>" +
+          "<td>" + r.refundMonth + "</td>" +
+          "<td class='num'>" + fmtMoney(r.refundSales) + "</td>" +
+          "<td class='num'>" + fmtMoney(r.refundDiscount) + "</td>" +
+          "<td class='num'>" + fmtMoney(r.refundTotal) + "</td>" +
+          "<td class='num'>" + (r.refundDays != null ? r.refundDays : "—") + "</td>" +
+          "<td class='num'>" + lineRate + "</td>";
+        tbody.appendChild(tr);
+      });
+      return;
+    }
+
+    var groups = {};
+    rows.forEach(function (r) {
+      var key;
+      if (dim === "year") key = r.orderMonth.slice(0, 4);
+      else if (dim === "month") key = r.orderMonth;
+      else if (dim === "channel") key = r.platform;
+      else if (dim === "store") key = r.store;
+      else key = "all";
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(r);
+    });
+
+    var keys = Object.keys(groups).sort();
+
+    thead.innerHTML =
+      "<tr>" +
+      "<th>维度值</th>" +
+      "<th class='num'>订单行数</th>" +
+      "<th class='num'>Σ退货总金额（绝对值）</th>" +
+      "<th class='num'>Σ总金额</th>" +
+      "<th class='num'>退款率</th>" +
+      "</tr>";
+
+    keys.forEach(function (k) {
+      var g = groups[k];
+      var a = aggregateRows(g);
+      var tr = document.createElement("tr");
+      tr.innerHTML =
+        "<td><strong>" + k + "</strong></td>" +
+        "<td class='num'>" + g.length + "</td>" +
+        "<td class='num'>" + fmtMoney(a.refundAbs) + "</td>" +
+        "<td class='num'>" + fmtMoney(a.totalPos) + "</td>" +
+        "<td class='num'><strong>" + fmtRate(a.refundAbs, a.totalPos) + "</strong></td>";
+      tbody.appendChild(tr);
+    });
+
+    var sumRows = rows;
+    var totalA = aggregateRows(sumRows);
+    var trSum = document.createElement("tr");
+    trSum.style.background = "#f5f5f4";
+    trSum.style.fontWeight = "600";
+    trSum.innerHTML =
+      "<td>合计（当前筛选）</td>" +
+      "<td class='num'>" + sumRows.length + "</td>" +
+      "<td class='num'>" + fmtMoney(totalA.refundAbs) + "</td>" +
+      "<td class='num'>" + fmtMoney(totalA.totalPos) + "</td>" +
+      "<td class='num'>" + fmtRate(totalA.refundAbs, totalA.totalPos) + "</td>";
+    tbody.appendChild(trSum);
+  }
+
+  function exportCsv() {
+    var table = document.getElementById("main-table");
+    var csv = [];
+    table.querySelectorAll("tr").forEach(function (row) {
+      var cols = [];
+      row.querySelectorAll("th, td").forEach(function (cell) {
+        var t = cell.innerText.replace(/\s+/g, " ").trim().replace(/"/g, '""');
+        cols.push('"' + t + '"');
+      });
+      csv.push(cols.join(","));
+    });
+    var bom = "\ufeff";
+    var blob = new Blob([bom + csv.join("\r\n")], { type: "text/csv;charset=utf-8;" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "退款率_" + state.dim + "_" + (new Date().toISOString().slice(0, 10)) + ".csv";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  document.querySelectorAll(".dim-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      document.querySelectorAll(".dim-btn").forEach(function (b) { b.classList.remove("active"); });
+      btn.classList.add("active");
+      state.dim = btn.getAttribute("data-dim");
+      renderTable();
+    });
+  });
+
+  document.getElementById("btn-apply").addEventListener("click", function () {
+    applyFilters();
+    renderTable();
+  });
+  document.getElementById("btn-reset").addEventListener("click", function () {
+    document.getElementById("f-platform").value = "";
+    document.getElementById("f-store").value = "";
+    document.getElementById("f-month-start").value = "2025-01";
+    document.getElementById("f-month-end").value = "2026-03";
+    applyFilters();
+    renderTable();
+  });
+  document.getElementById("btn-export").addEventListener("click", exportCsv);
+
+  initFilters();
+  applyFilters();
+  renderTable();
+})();
+  </script>
+</body>
+</html>
